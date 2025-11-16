@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Anne Beauty Admin</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>Anne Beauty</h1>
+        <p>Admin</p>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <a href="/admin/dashboard" class="nav-item active">📊 Dashboard</a>
+        <a href="#" class="nav-item" onclick="openAvailabilityModal(event)">🕐 Gerenciar Horários</a>
+        <a href="#" class="nav-item" onclick="generateLink(event)">🔗 Gerar Link</a>
+        <a href="/admin/login" class="nav-item">🚪 Sair</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Dashboard de Agendamentos</h1>
+        <p>Visualize e gerencie todos os agendamentos</p>
+      </div>
+
+      <!-- Estatísticas -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number"><%= stats.total %></div>
+          <div class="stat-label">Total de Agendamentos</div>
+        </div>
+        <div class="stat-card confirmed">
+          <div class="stat-number"><%= stats.confirmed %></div>
+          <div class="stat-label">Confirmados</div>
+        </div>
+        <div class="stat-card completed">
+          <div class="stat-number"><%= stats.completed %></div>
+          <div class="stat-label">Concluídos</div>
+        </div>
+        <div class="stat-card cancelled">
+          <div class="stat-number"><%= stats.cancelled %></div>
+          <div class="stat-label">Cancelados</div>
+        </div>
+      </div>
+
+      <!-- Tabela de Agendamentos -->
+      <div class="appointments-section">
+        <h2>Próximos Agendamentos</h2>
+        
+        <% if (appointments.length > 0) { %>
+          <div class="table-responsive">
+            <table class="appointments-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Horário</th>
+                  <th>Cliente</th>
+                  <th>Serviço</th>
+                  <th>Telefone</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% appointments.forEach(apt => { %>
+                  <tr class="appointment-row <%= apt.status %>">
+                    <td><%= new Date(apt.appointment_date).toLocaleDateString('pt-BR') %></td>
+                    <td><%= apt.appointment_time %></td>
+                    <td><%= apt.client_name %></td>
+                    <td><%= formatServiceName(apt.service) %></td>
+                    <td>
+                      <a href="https://wa.me/55<%= apt.client_phone.replace(/\D/g, '') %>" target="_blank">
+                        <%= apt.client_phone %>
+                      </a>
+                    </td>
+                    <td>
+                      <span class="status-badge <%= apt.status %>">
+                        <%= formatStatus(apt.status) %>
+                      </span>
+                    </td>
+                    <td class="actions">
+                      <% if (apt.status === 'confirmed') { %>
+                        <button class="btn-small btn-complete" onclick="updateStatus('<%= apt.id %>', 'completed')">✅</button>
+                        <button class="btn-small btn-cancel" onclick="updateStatus('<%= apt.id %>', 'cancelled')">❌</button>
+                      <% } %>
+                      <button class="btn-small btn-info" onclick="showDetails('<%= apt.id %>')">ℹ️</button>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <p class="no-data">Nenhum agendamento futuro.</p>
+        <% } %>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal para Gerenciar Horários -->
+  <div id="availabilityModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeAvailabilityModal()">&times;</span>
+      <h2>🕐 Gerenciar Horários e Datas</h2>
+      
+      <div class="availability-controls">
+        <h3>Bloquear Horário Específico</h3>
+        <div class="form-group">
+          <label>Data:</label>
+          <input type="date" id="unavailDate" required>
+        </div>
+        <div class="form-group">
+          <label>Horário:</label>
+          <select id="unavailTime" required>
+            <option value="">Selecione</option>
+            <option value="10:00">10:00 - 11:00 (Sábado)</option>
+            <option value="11:00">11:00 - 12:00 (Sábado)</option>
+            <option value="12:00">12:00 - 13:00 (Sábado)</option>
+            <option value="13:00">13:00 - 14:00 (Sábado)</option>
+            <option value="14:00">14:00 - 15:00</option>
+            <option value="15:00">15:00 - 16:00</option>
+            <option value="16:00">16:00 - 17:00</option>
+            <option value="17:00">17:00 - 18:00</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Motivo (opcional):</label>
+          <input type="text" id="unavailReason" placeholder="Ex: Manutenção, Feriado, etc">
+        </div>
+        <button onclick="blockTimeSlot()" class="btn btn-primary">🔒 Bloquear Horário</button>
+      </div>
+
+      <hr style="margin: 20px 0;">
+
+      <div class="availability-controls">
+        <h3>Bloquear Data Inteira</h3>
+        <div class="form-group">
+          <label>Data:</label>
+          <input type="date" id="unavailFullDate" required>
+        </div>
+        <div class="form-group">
+          <label>Motivo:</label>
+          <input type="text" id="unavailFullReason" placeholder="Ex: Fechado, Feriado, Evento">
+        </div>
+        <button onclick="blockFullDate()" class="btn btn-danger">🚫 Bloquear Data Inteira</button>
+      </div>
+
+      <hr style="margin: 20px 0;">
+
+      <div class="unavailable-list">
+        <h3>Horários/Datas Bloqueadas</h3>
+        <div id="unavailableSlotsList" class="slots-list">
+          <p>Carregando...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Link -->
+  <div id="linkModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeLinkModal()">&times;</span>
+      <h2>Link de Agendamento</h2>
+      <p>Compartilhe este link com seus clientes:</p>
+      
+      <div class="link-box">
+        <input type="text" id="bookingLink" readonly>
+        <button onclick="copyLink()" class="btn btn-small">📋 Copiar</button>
+      </div>
+
+      <div class="link-box">
+        <label>Ou compartilhe direto no WhatsApp:</label>
+        <a id="whatsappLink" href="#" target="_blank" class="btn btn-primary">
+          💬 Abrir WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/admin.js"></script>
+  <script>
+    function formatServiceName(service) {
+      const names = {
+        'manicure': 'Manicure',
+        'pedicure': 'Pedicura',
+        'cilios': 'Cílios',
+        'combo_mani_pedi': 'Manicure + Pedicura',
+        'combo_completo': 'Manicure + Pedicura + Cílios'
+      };
+      return names[service] || service;
+    }
+
+    function formatStatus(status) {
+      const statuses = {
+        'confirmed': '✅ Confirmado',
+        'completed': '✔️ Concluído',
+        'cancelled': '❌ Cancelado'
+      };
+      return statuses[status] || status;
+    }
+
+    function generateLink(e) {
+      e.preventDefault();
+      fetch('/admin/generate-link?password=anne2025')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('bookingLink').value = data.link;
+          document.getElementById('whatsappLink').href = data.whatsapp;
+          document.getElementById('linkModal').style.display = 'block';
+        });
+    }
+
+    function openAvailabilityModal(e) {
+      e.preventDefault();
+      document.getElementById('availabilityModal').style.display = 'block';
+      loadUnavailableSlots();
+    }
+
+    function closeAvailabilityModal() {
+      document.getElementById('availabilityModal').style.display = 'none';
+    }
+
+    function loadUnavailableSlots() {
+      fetch('/admin/api/unavailable-slots')
+        .then(res => res.json())
+        .then(data => {
+          const list = document.getElementById('unavailableSlotsList');
+          if (data.length === 0) {
+            list.innerHTML = '<p>Nenhum horário bloqueado</p>';
+            return;
+          }
+          list.innerHTML = data.map(slot => `
+            <div class="unavail-item">
+              <div>
+                <strong>${new Date(slot.date + 'T00:00:00').toLocaleDateString('pt-BR')}</strong>
+                às <strong>${slot.time}</strong>
+                ${slot.reason ? `<br><small>${slot.reason}</small>` : ''}
+              </div>
+              <button class="btn-small btn-danger" onclick="unblockSlot(${slot.id})">🔓 Desbloquear</button>
+            </div>
+          `).join('');
+        });
+    }
+
+    function blockTimeSlot() {
+      const date = document.getElementById('unavailDate').value;
+      const time = document.getElementById('unavailTime').value;
+      const reason = document.getElementById('unavailReason').value;
+
+      if (!date || !time) {
+        alert('⚠️ Data e horário são obrigatórios!');
+        return;
+      }
+
+      fetch('/admin/api/unavailable-slots', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date, time, reason })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert('✅ Horário bloqueado!');
+          document.getElementById('unavailDate').value = '';
+          document.getElementById('unavailTime').value = '';
+          document.getElementById('unavailReason').value = '';
+          loadUnavailableSlots();
+        }
+      });
+    }
+
+    function blockFullDate() {
+      const date = document.getElementById('unavailFullDate').value;
+      const reason = document.getElementById('unavailFullReason').value;
+
+      if (!date) {
+        alert('⚠️ Data é obrigatória!');
+        return;
+      }
+
+      fetch('/admin/api/unavailable-dates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date, reason: reason || 'Data bloqueada' })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert('✅ Data inteira bloqueada!');
+          document.getElementById('unavailFullDate').value = '';
+          document.getElementById('unavailFullReason').value = '';
+          loadUnavailableSlots();
+        }
+      });
+    }
+
+    function unblockSlot(id) {
+      if (!confirm('Desbloquear este horário?')) return;
+
+      fetch(`/admin/api/unavailable-slots/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert('✅ Horário desbloqueado!');
+          loadUnavailableSlots();
+        }
+      });
+    }
+
+    function closeLinkModal() {
+      document.getElementById('linkModal').style.display = 'none';
+    }
+
+    function copyLink() {
+      const link = document.getElementById('bookingLink');
+      link.select();
+      document.execCommand('copy');
+      alert('Link copiado para a área de transferência!');
+    }
+
+    function updateStatus(id, status) {
+      if (confirm('Tem certeza?')) {
+        fetch(`/admin/api/appointments/${id}/${status === 'completed' ? 'complete' : 'cancel'}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            location.reload();
+          }
+        });
+      }
+    }
+
+    function showDetails(id) {
+      alert('Detalhes do agendamento ID: ' + id);
+    }
+
+    // Fechar modal ao clicar fora
+    window.onclick = function(event) {
+      const modal = document.getElementById('linkModal');
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

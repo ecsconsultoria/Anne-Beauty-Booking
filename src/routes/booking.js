@@ -1,0 +1,109 @@
+const express = require('express');
+const router = express.Router();
+const { getDatabase } = require('../database');
+const { generateAppointmentId } = require('../utils/linkGenerator');
+
+// GET - Obter datas disponíveis
+router.get('/available-dates', (req, res) => {
+  const db = getDatabase();
+  
+  db.all(
+    `SELECT date FROM available_dates 
+     WHERE is_active = 1 AND date >= date('now')
+     ORDER BY date ASC
+     LIMIT 30`,
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: 'Erro ao buscar datas' });
+      }
+      res.json(rows);
+    }
+  );
+});
+
+// GET - Obter horários disponíveis para uma data
+router.get('/available-times/:date', (req, res) => {
+  const db = getDatabase();
+  const { date } = req.params;
+
+  db.all(
+    `SELECT ts.id, ts.start_time, ts.end_time,
+     COUNT(a.id) as booked,
+     CASE WHEN us.id IS NOT NULL THEN 1 ELSE 0 END as is_unavailable
+     FROM time_slots ts
+     LEFT JOIN appointments a ON ts.start_time = a.appointment_time 
+     AND a.appointment_date = ? AND a.status = 'confirmed'
+     LEFT JOIN unavailable_slots us ON ts.start_time = us.time 
+     AND us.date = ? AND us.is_unavailable = 1
+     WHERE ts.is_active = 1
+     GROUP BY ts.id
+     ORDER BY ts.start_time ASC`,
+    [date, date],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: 'Erro ao buscar horários' });
+      }
+      res.json(rows);
+    }
+  );
+});
+
+// POST - Criar novo agendamento
+router.post('/create', (req, res) => {
+  const db = getDatabase();
+  const {
+    client_name,
+    client_phone,
+    client_email,
+    service,
+    appointment_date,
+    appointment_time,
+    notes
+  } = req.body;
+
+  // Validar dados
+  if (!client_name || !client_phone || !service || !appointment_date || !appointment_time) {
+    return res.status(400).json({ error: 'Dados obrigatórios faltando' });
+  }
+
+  const appointmentId = generateAppointmentId();
+
+  db.run(
+    `INSERT INTO appointments 
+     (id, client_name, client_phone, client_email, service, appointment_date, appointment_time, notes)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [appointmentId, client_name, client_phone, client_email, service, appointment_date, appointment_time, notes],
+    (err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Erro ao criar agendamento' });
+      }
+      res.json({
+        success: true,
+        appointment_id: appointmentId,
+        message: 'Agendamento confirmado! Você receberá uma confirmação via WhatsApp.'
+      });
+    }
+  );
+});
+
+// GET - Obter detalhes do agendamento
+router.get('/:id', (req, res) => {
+  const db = getDatabase();
+  const { id } = req.params;
+
+  db.get(
+    `SELECT * FROM appointments WHERE id = ?`,
+    [id],
+    (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: 'Erro ao buscar agendamento' });
+      }
+      if (!row) {
+        return res.status(404).json({ error: 'Agendamento não encontrado' });
+      }
+      res.json(row);
+    }
+  );
+});
+
+module.exports = router;

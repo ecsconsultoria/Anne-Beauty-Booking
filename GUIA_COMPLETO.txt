@@ -1,0 +1,178 @@
+✨ SISTEMA DE AGENDAMENTO ANNE BEAUTY - PROJETO COMPLETO ✨
+
+📍 Localização: c:\Users\ECS\OneDrive - ECS Consultoria\PYTHON\anne-beauty-booking
+
+## 📂 Estrutura do Projeto
+
+anne-beauty-booking/
+├── src/
+│   ├── server.js                 # Servidor principal Express
+│   ├── database.js               # Configuração do SQLite
+│   ├── routes/
+│   │   ├── booking.js           # APIs para agendamentos de clientes
+│   │   ├── admin.js             # APIs e rotas do painel admin
+│   │   └── client.js            # Rotas da página do cliente
+│   └── utils/
+│       └── linkGenerator.js      # Utilitários para gerar links/IDs
+├── views/
+│   ├── index.ejs                # Página inicial
+│   ├── client-booking.ejs       # Página de agendamento (cliente)
+│   ├── client-confirmation.ejs  # Página de confirmação
+│   ├── admin-login.ejs          # Página de login do admin
+│   └── admin-dashboard.ejs      # Painel administrativo
+├── public/
+│   ├── css/
+│   │   ├── style.css           # Estilos principais (mobile-first)
+│   │   └── admin.css           # Estilos do painel admin
+│   └── js/
+│       ├── booking.js          # Lógica do agendamento
+│       └── admin.js            # Lógica do painel admin
+├── data/                         # Pasta para banco de dados SQLite
+├── package.json                  # Dependências do projeto
+├── README.md                     # Documentação completa
+├── SETUP.md                      # Instruções de instalação
+└── .gitignore                    # Arquivos ignorados pelo Git
+
+## 🎯 Funcionalidades Implementadas
+
+✅ Interface Mobile-First (responsiva para celular)
+✅ Agendamento de clientes via link compartilhado
+✅ Calendário com datas disponíveis (próximos 30 dias)
+✅ Seleção de horários dinâmica (9h-17h com slots de 30min)
+✅ Serviços: Manicure, Pedicura, Cílios, Combos
+✅ Painel administrativo para gerenciar agendamentos
+✅ Confirmação de agendamento em tempo real
+✅ Integração com WhatsApp para compartilhamento
+✅ Banco de dados SQLite para armazenar agendamentos
+✅ Status de agendamentos (confirmado, concluído, cancelado)
+✅ Detalhes e observações de cada cliente
+
+## 🚀 Como Usar (Próximos Passos)
+
+### 1. INSTALAR NODE.JS PRIMEIRO!
+   - Acesse: https://nodejs.org/ (versão LTS)
+   - Faça download e execute o instalador
+   - Reinicie o computador
+
+### 2. Abrir PowerShell e navegar até o projeto:
+   ```powershell
+   cd "c:\Users\ECS\OneDrive - ECS Consultoria\PYTHON\anne-beauty-booking"
+   ```
+
+### 3. Instalar dependências:
+   ```powershell
+   npm install
+   ```
+
+### 4. Iniciar o servidor:
+   ```powershell
+   npm start
+   ```
+
+### 5. Acessar no navegador:
+   - Cliente: http://localhost:3000/client/booking
+   - Admin: http://localhost:3000/admin/login (senha: anne2025)
+
+## 👥 Fluxo de Uso
+
+### Para Clientes:
+1. Clica no link compartilhado pela manicure
+2. Preenche nome, telefone e email
+3. Seleciona o serviço desejado
+4. Escolhe data entre as disponíveis
+5. Seleciona horário disponível
+6. Confirma agendamento
+7. Recebe confirmação com opção de compartilhar no WhatsApp
+
+### Para Admin (Manicure):
+1. Acessa http://localhost:3000/admin/login
+2. Insere senha (padrão: anne2025)
+3. Visualiza dashboard com estatísticas
+4. Gerencia agendamentos (confirmar, completar, cancelar)
+5. Pode gerar e compartilhar link de agendamento
+6. Acessa detalhes de cada cliente
+
+## 🔐 Configurações Importantes
+
+### Alterar Senha do Admin:
+   Arquivo: src/routes/admin.js
+   Procure: if (password !== 'anne2025')
+   Altere: 'anne2025' para sua senha
+
+### Número de WhatsApp:
+   Padrão: (11) 9.6167-2313
+   Locais onde alterar:
+   - src/routes/admin.js
+   - views/admin-dashboard.ejs
+   - public/js/booking.js
+
+### Adicionar/Remover Horários:
+   Arquivo: src/database.js (função createTables)
+   Modifique o array timeSlots conforme necessário
+
+## 📊 Banco de Dados
+
+SQLite automático com 3 tabelas:
+- appointments (agendamentos dos clientes)
+- time_slots (horários disponíveis: 09h-18h, slots de 30min)
+- available_dates (controle de datas abertas para agendamento)
+
+## 📱 Informações da Empresa
+
+Nome: Anne Beauty
+Telefone: (11) 9.6167-2313
+Serviços: Manicure, Pedicura, Cílios
+
+## 🔧 Stack Tecnológico
+
+- Backend: Node.js + Express.js
+- Frontend: HTML5 + CSS3 + JavaScript
+- Database: SQLite3
+- Templating: EJS
+- Mobile-First: Responsivo para todos os tamanhos
+
+## ⚙️ Dependências Principais
+
+- express (servidor web)
+- ejs (templates)
+- sqlite3 (banco de dados)
+- uuid (gerar IDs únicos)
+- cors (requisições entre domínios)
+- body-parser (parsing de dados)
+- nodemon (desenvolvimento)
+
+## 📝 Próximos Passos Recomendados
+
+1. ✅ Instalar Node.js
+2. ✅ Instalar dependências (npm install)
+3. ✅ Iniciar servidor (npm start)
+4. 🔄 Testar agendamento como cliente
+5. 🔄 Testar painel admin
+6. 🔄 Gerar link via WhatsApp
+7. 🔄 Personalizar: cores, textos, horários
+8. 🔄 Considerar hospedagem (Heroku, Vercel, etc)
+
+## 🎨 Personalização Rápida
+
+### Mudar Cores (primária/secundária):
+Arquivo: public/css/style.css
+Procure: :root (variáveis CSS)
+
+### Adicionar Logo:
+Pasta: public/img/ (crie a pasta)
+Edite: views/index.ejs (adicione <img src="/img/logo.png">)
+
+### Mudar Horários de Funcionamento:
+Arquivo: src/database.js
+Modifique o array de timeSlots
+
+## 📞 Suporte
+
+Em caso de dúvidas sobre o sistema:
+- Consulte README.md
+- Verifique SETUP.md para problemas de instalação
+- Revise .github/copilot-instructions.md para arquitetura
+
+---
+
+✨ Sistema pronto para usar! Divirta-se! ✨

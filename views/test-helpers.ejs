@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Teste de Helpers</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
+    th { background: #4CAF50; color: white; }
+    .success { color: green; font-weight: bold; }
+    h1 { color: #333; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>✅ Teste de Helpers EJS</h1>
+    <p>Se você está vendo esta página, as funções helper estão funcionando!</p>
+
+    <h2>Serviços Formatados:</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Serviço (Bruto)</th>
+          <th>Serviço (Formatado)</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% appointments.forEach(apt => { %>
+          <tr>
+            <td><%= apt.id %></td>
+            <td><code><%= apt.service %></code></td>
+            <td class="success"><%= formatServiceName(apt.service) %></td>
+            <td><%= formatStatus(apt.status) %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+
+    <p style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 5px;">
+      <strong>Conclusão:</strong> Se você vê uma tabela acima com dados formatados (como "Manicure", "Pedicura", etc.) 
+      em vez de um erro de "não definido", então a correção funcionou! ✅
+    </p>
+
+    <p>
+      <a href="http://localhost:3000/admin/login" style="color: #4CAF50; text-decoration: none; font-weight: bold;">
+        ← Voltar para Login Admin
+      </a>
+    </p>
+  </div>
+</body>
+</html>

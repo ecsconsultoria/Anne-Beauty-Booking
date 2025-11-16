@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agendamento Confirmado - Anne Beauty</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container mobile">
+    <div class="header">
+      <h1>Anne Beauty</h1>
+      <p class="tagline">Agendamento Confirmado! ✅</p>
+    </div>
+
+    <div class="confirmation-box" id="confirmationBox">
+      <div class="success-icon">✅</div>
+      <h2>Seu agendamento foi confirmado!</h2>
+      <p>Você receberá uma mensagem de confirmação via WhatsApp.</p>
+      
+      <div class="confirmation-details" id="details"></div>
+
+      <div class="actions">
+        <a href="https://wa.me/5511961672313" class="btn btn-primary" target="_blank">
+          💬 Conversar no WhatsApp
+        </a>
+        <a href="/client/booking" class="btn btn-secondary">
+          📅 Fazer Novo Agendamento
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Obter ID do agendamento da URL
+    const appointmentId = '<%= appointmentId %>';
+    
+    // Buscar detalhes do agendamento
+    fetch(`/api/booking/${appointmentId}`)
+      .then(res => res.json())
+      .then(data => {
+        const detailsHtml = `
+          <div class="detail">
+            <strong>📅 Data:</strong> ${new Date(data.appointment_date).toLocaleDateString('pt-BR')}
+          </div>
+          <div class="detail">
+            <strong>🕐 Hora:</strong> ${data.appointment_time}
+          </div>
+          <div class="detail">
+            <strong>💅 Serviço:</strong> ${formatServiceName(data.service)}
+          </div>
+          <div class="detail">
+            <strong>👤 Nome:</strong> ${data.client_name}
+          </div>
+          <div class="detail">
+            <strong>📱 Telefone:</strong> ${data.client_phone}
+          </div>
+        `;
+        
+        document.getElementById('details').innerHTML = detailsHtml;
+      })
+      .catch(err => {
+        console.error('Erro ao carregar detalhes:', err);
+        document.getElementById('details').innerHTML = '<p>Agendamento realizado com sucesso!</p>';
+      });
+
+    function formatServiceName(service) {
+      const serviceNames = {
+        'manicure': 'Manicure',
+        'pedicure': 'Pedicura',
+        'cilios': 'Cílios',
+        'combo_mani_pedi': 'Manicure + Pedicura',
+        'combo_completo': 'Manicure + Pedicura + Cílios'
+      };
+      return serviceNames[service] || service;
+    }
+  </script>
+</body>
+</html>

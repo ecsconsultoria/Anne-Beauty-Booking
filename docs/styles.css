@@ -1,0 +1,526 @@
+/* ==================== RESET & BASE ==================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #333;
+  min-height: 100vh;
+}
+
+/* ==================== CONTAINER ==================== */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* ==================== HEADER ==================== */
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.tagline {
+  font-size: 1.1em;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+/* ==================== MAIN ==================== */
+.main {
+  padding: 20px;
+}
+
+/* ==================== BOOKING SECTION ==================== */
+.booking-section {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.booking-section h2 {
+  color: #667eea;
+  margin-bottom: 10px;
+  font-size: 1.8em;
+}
+
+.info-text {
+  color: #666;
+  margin-bottom: 25px;
+  font-size: 0.95em;
+}
+
+/* ==================== FORM ==================== */
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+legend {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #764ba2;
+  margin-bottom: 10px;
+  padding: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+label {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.95em;
+}
+
+small {
+  color: #999;
+  font-size: 0.85em;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="date"],
+select,
+textarea {
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1em;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="email"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background-color: #f9f9ff;
+}
+
+/* ==================== SERVICE OPTIONS ==================== */
+.service-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.service-option {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f9f9f9;
+}
+
+.service-option:hover {
+  background: #f0f0ff;
+  border-color: #667eea;
+}
+
+.service-option input[type="radio"] {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  accent-color: #667eea;
+}
+
+.service-option input[type="radio"]:checked + .service-name {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.service-name {
+  flex: 1;
+  font-weight: 500;
+  color: #333;
+}
+
+.service-time {
+  color: #999;
+  font-size: 0.9em;
+  background: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+/* ==================== BUTTON ==================== */
+.btn-submit {
+  padding: 15px 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  margin-top: 10px;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+}
+
+.btn-submit:active {
+  transform: translateY(0);
+}
+
+.form-note {
+  text-align: center;
+  color: #999;
+  font-size: 0.9em;
+  margin-top: -10px;
+}
+
+/* ==================== CONFIRMATION ==================== */
+.confirmation-section {
+  padding: 20px;
+}
+
+.confirmation-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.confirmation-card h2 {
+  color: #4CAF50;
+  margin-bottom: 25px;
+  font-size: 1.8em;
+  text-align: center;
+}
+
+.confirmation-details {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.confirmation-details h3 {
+  color: #667eea;
+  font-size: 1.1em;
+  margin: 15px 0 10px 0;
+}
+
+.confirmation-details h3:first-child {
+  margin-top: 0;
+}
+
+.confirmation-details p {
+  padding: 8px 0;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* ==================== BUTTONS ==================== */
+.btn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-whatsapp {
+  background: #25D366;
+  color: white;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+  margin-bottom: 10px;
+}
+
+.btn-whatsapp:hover {
+  background: #1da853;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.6);
+}
+
+.btn-secondary {
+  background: #667eea;
+  color: white;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+}
+
+.confirmation-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.confirmation-note {
+  text-align: center;
+  color: #666;
+  margin: 15px 0;
+  font-size: 0.95em;
+}
+
+/* ==================== SHARE SECTION ==================== */
+.share-section {
+  background: #f0f0ff;
+  padding: 15px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+}
+
+.share-section label {
+  display: block;
+  margin-bottom: 10px;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.share-box {
+  display: flex;
+  gap: 10px;
+}
+
+.share-box input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9em;
+  background: white;
+}
+
+.btn-copy {
+  padding: 10px 15px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-copy:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+}
+
+/* ==================== FOOTER ==================== */
+.footer {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  text-align: center;
+  padding: 30px 20px;
+  margin-top: 40px;
+}
+
+.footer p {
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+.footer a {
+  color: #4CAF50;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.footer a:hover {
+  color: #66BB6A;
+}
+
+.footer-note {
+  font-size: 0.9em;
+  opacity: 0.8;
+  margin-top: 15px;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 600px) {
+  .header h1 {
+    font-size: 2em;
+  }
+
+  .tagline {
+    font-size: 1em;
+  }
+
+  .booking-section {
+    padding: 20px;
+    margin-bottom: 15px;
+  }
+
+  .booking-section h2 {
+    font-size: 1.5em;
+  }
+
+  .info-text {
+    font-size: 0.9em;
+  }
+
+  .service-option {
+    flex-direction: column;
+    text-align: center;
+    padding: 12px;
+  }
+
+  .service-name {
+    flex: 1;
+  }
+
+  .service-time {
+    width: 100%;
+  }
+
+  .confirmation-card {
+    padding: 20px;
+  }
+
+  .confirmation-card h2 {
+    font-size: 1.5em;
+  }
+
+  .confirmation-details {
+    padding: 15px;
+  }
+
+  .confirmation-details h3 {
+    font-size: 1em;
+    margin: 12px 0 8px 0;
+  }
+
+  .confirmation-details p {
+    padding: 6px 0;
+    font-size: 0.95em;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    font-size: 0.95em;
+  }
+
+  .share-box {
+    flex-direction: column;
+  }
+
+  .share-box input {
+    width: 100%;
+  }
+
+  .btn-copy {
+    width: 100%;
+  }
+
+  .footer {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 20px 15px;
+  }
+
+  .header h1 {
+    font-size: 1.7em;
+  }
+
+  .tagline {
+    font-size: 0.9em;
+  }
+
+  .booking-section {
+    padding: 15px;
+  }
+
+  .booking-section h2 {
+    font-size: 1.3em;
+  }
+
+  fieldset {
+    gap: 12px;
+  }
+
+  legend {
+    font-size: 1em;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 10px 12px;
+    font-size: 16px; /* Previne zoom automático em iOS */
+  }
+
+  .btn-submit {
+    padding: 12px 20px;
+    font-size: 1em;
+  }
+}

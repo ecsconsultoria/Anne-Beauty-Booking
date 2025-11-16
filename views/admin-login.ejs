@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Painel Anne Beauty</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container admin-login">
+    <div class="login-box">
+      <h1>Anne Beauty</h1>
+      <h2>Painel Administrativo</h2>
+      
+      <% if (error) { %>
+        <div class="alert alert-danger">
+          ❌ <%= error %>
+        </div>
+      <% } %>
+
+      <form method="POST" action="/admin/login" class="form">
+        <div class="form-group">
+          <label for="password">Senha *</label>
+          <input type="password" id="password" name="password" required autofocus>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-large">🔓 Entrar</button>
+      </form>
+
+      <p class="login-hint">Insira a senha para acessar o painel administrativo.</p>
+    </div>
+  </div>
+</body>
+</html>

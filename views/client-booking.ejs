@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fazer Agendamento - Anne Beauty</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container mobile">
+    <div class="header">
+      <h1>Anne Beauty</h1>
+      <p class="tagline">Agende seu serviço</p>
+    </div>
+
+    <form id="bookingForm" class="form">
+      <!-- Dados Pessoais -->
+      <div class="form-section">
+        <h3>Seus Dados</h3>
+        
+        <div class="form-group">
+          <label for="clientName">Nome completo *</label>
+          <input type="text" id="clientName" name="client_name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="clientPhone">Telefone/WhatsApp *</label>
+          <input type="tel" id="clientPhone" name="client_phone" placeholder="(11) 99999-9999" required>
+        </div>
+
+        <div class="form-group">
+          <label for="clientEmail">Email</label>
+          <input type="email" id="clientEmail" name="client_email">
+        </div>
+      </div>
+
+      <!-- Serviço -->
+      <div class="form-section">
+        <h3>Serviço Desejado</h3>
+        
+        <div class="form-group">
+          <label for="service">Escolha o serviço *</label>
+          <select id="service" name="service" required>
+            <option value="">Selecione um serviço</option>
+            <option value="manicure">Manicure</option>
+            <option value="pedicure">Pedicura</option>
+            <option value="cilios">Cílios</option>
+            <option value="combo_mani_pedi">Combo Manicure + Pedicura</option>
+            <option value="combo_completo">Combo Completo (Manicure + Pedicura + Cílios)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Data e Hora -->
+      <div class="form-section">
+        <h3>Escolha a Data e Hora</h3>
+        
+        <div class="form-group">
+          <label for="appointmentDate">Data *</label>
+          <input type="date" id="appointmentDate" name="appointment_date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="appointmentTime">Horário *</label>
+          <select id="appointmentTime" name="appointment_time" required>
+            <option value="">Carregando horários...</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Notas -->
+      <div class="form-section">
+        <h3>Observações</h3>
+        
+        <div class="form-group">
+          <label for="notes">Alguma observação especial?</label>
+          <textarea id="notes" name="notes" rows="3" placeholder="Ex: Alergia a produtos, preferências de cor, etc."></textarea>
+        </div>
+      </div>
+
+      <!-- Botão Enviar -->
+      <div class="form-section">
+        <button type="submit" class="btn btn-success btn-large">✅ Confirmar Agendamento</button>
+      </div>
+    </form>
+
+    <div id="loadingSpinner" style="display: none;" class="spinner">
+      <p>Processando...</p>
+    </div>
+  </div>
+
+  <script src="/js/booking.js"></script>
+</body>
+</html>

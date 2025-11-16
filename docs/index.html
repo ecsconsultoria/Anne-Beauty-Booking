@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anne Beauty - Agendamentos Online</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <h1>💅 Anne Beauty</h1>
+        <p class="tagline">Manicure | Pedicure | Cílios</p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <section class="booking-section">
+        <h2>Agende seu horário</h2>
+        <p class="info-text">Escolha o serviço, data e horário que melhor se adequa a você</p>
+
+        <!-- Formulário -->
+        <form id="bookingForm" class="booking-form">
+          <!-- Dados do Cliente -->
+          <fieldset>
+            <legend>Seus Dados</legend>
+            
+            <div class="form-group">
+              <label for="clientName">Nome Completo *</label>
+              <input 
+                type="text" 
+                id="clientName" 
+                name="clientName" 
+                placeholder="Digite seu nome"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="clientPhone">Telefone (WhatsApp) *</label>
+              <input 
+                type="tel" 
+                id="clientPhone" 
+                name="clientPhone" 
+                placeholder="(11) 9.0000-0000"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="clientEmail">Email</label>
+              <input 
+                type="email" 
+                id="clientEmail" 
+                name="clientEmail" 
+                placeholder="seu@email.com"
+              >
+            </div>
+          </fieldset>
+
+          <!-- Seleção de Serviço -->
+          <fieldset>
+            <legend>Escolha o Serviço</legend>
+            
+            <div class="service-options">
+              <label class="service-option">
+                <input type="radio" name="service" value="manicure" required>
+                <span class="service-name">💅 Manicure</span>
+                <span class="service-time">30 min</span>
+              </label>
+
+              <label class="service-option">
+                <input type="radio" name="service" value="pedicure">
+                <span class="service-name">🦶 Pedicure</span>
+                <span class="service-time">30 min</span>
+              </label>
+
+              <label class="service-option">
+                <input type="radio" name="service" value="cilios">
+                <span class="service-name">✨ Cílios</span>
+                <span class="service-time">30 min</span>
+              </label>
+
+              <label class="service-option">
+                <input type="radio" name="service" value="combo_mani_pedi">
+                <span class="service-name">💅🦶 Manicure + Pedicure</span>
+                <span class="service-time">60 min</span>
+              </label>
+
+              <label class="service-option">
+                <input type="radio" name="service" value="combo_completo">
+                <span class="service-name">💅🦶✨ Combo Completo</span>
+                <span class="service-time">90 min</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <!-- Data e Hora -->
+          <fieldset>
+            <legend>Data e Horário</legend>
+            
+            <div class="form-group">
+              <label for="appointmentDate">Data *</label>
+              <input 
+                type="date" 
+                id="appointmentDate" 
+                name="appointmentDate"
+                required
+              >
+              <small>Disponível de segunda a sexta</small>
+            </div>
+
+            <div class="form-group">
+              <label for="appointmentTime">Horário *</label>
+              <select 
+                id="appointmentTime" 
+                name="appointmentTime"
+                required
+              >
+                <option value="">Selecione um horário</option>
+                <option value="14:00">14:00 - 15:00</option>
+                <option value="15:00">15:00 - 16:00</option>
+                <option value="16:00">16:00 - 17:00</option>
+                <option value="17:00">17:00 - 18:00</option>
+              </select>
+              <small>Disponível de segunda a sexta das 14:00 às 18:00</small>
+            </div>
+          </fieldset>
+
+          <!-- Notas -->
+          <fieldset>
+            <legend>Observações (Opcional)</legend>
+            <div class="form-group">
+              <label for="notes">Tem alguma solicitação especial?</label>
+              <textarea 
+                id="notes" 
+                name="notes" 
+                placeholder="Ex: alergia a produtos, cores preferidas, etc."
+                rows="3"
+              ></textarea>
+            </div>
+          </fieldset>
+
+          <!-- Botão -->
+          <button type="submit" class="btn-submit">📅 Confirmar Agendamento</button>
+          <p class="form-note">* Campos obrigatórios</p>
+        </form>
+      </section>
+
+      <!-- Confirmação -->
+      <section id="confirmationSection" class="confirmation-section" style="display: none;">
+        <div class="confirmation-card">
+          <h2>✅ Agendamento Realizado!</h2>
+          
+          <div class="confirmation-details">
+            <h3>Seus dados:</h3>
+            <p><strong>Nome:</strong> <span id="confirmName"></span></p>
+            <p><strong>Telefone:</strong> <span id="confirmPhone"></span></p>
+            <p><strong>Email:</strong> <span id="confirmEmail"></span></p>
+            
+            <h3>Serviço:</h3>
+            <p><strong>Tipo:</strong> <span id="confirmService"></span></p>
+            <p><strong>Data:</strong> <span id="confirmDate"></span></p>
+            <p><strong>Horário:</strong> <span id="confirmTime"></span></p>
+            
+            <div id="notesSection" style="display: none;">
+              <h3>Observações:</h3>
+              <p id="confirmNotes"></p>
+            </div>
+          </div>
+
+          <div class="confirmation-actions">
+            <a id="whatsappLink" href="#" target="_blank" class="btn btn-whatsapp">
+              💬 Confirmar no WhatsApp
+            </a>
+            <button onclick="location.reload()" class="btn btn-secondary">
+              📱 Novo Agendamento
+            </button>
+          </div>
+
+          <p class="confirmation-note">
+            Você também pode compartilhar este link com seus amigos e familiares!
+          </p>
+
+          <div class="share-section">
+            <label>Compartilhe este link:</label>
+            <div class="share-box">
+              <input type="text" id="shareLink" readonly value="">
+              <button onclick="copyShareLink()" class="btn-copy">📋 Copiar</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>📱 Telefone: <a href="tel:+5511961672313">(11) 9.6167-2313</a></p>
+      <p>📍 Anne Beauty - Manicure, Pedicure e Cílios</p>
+      <p class="footer-note">Sistema de agendamentos online</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
