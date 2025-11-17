@@ -12,8 +12,23 @@ const initializeDatabase = () => {
     }
     console.log('✅ Banco de dados conectado:', dbPath);
     
-    // Configurar timeouts e limites
-    db.configure('busyTimeout', 5000);
+    // Configurar para melhor performance no Render
+    db.configure('busyTimeout', 30000); // 30 segundos
+    
+    // Ativar WAL mode para melhor concorrência
+    db.run('PRAGMA journal_mode=WAL;', (err) => {
+      if (err) {
+        console.error('Erro ao ativar WAL mode:', err);
+      } else {
+        console.log('✅ WAL mode ativado');
+      }
+    });
+    
+    // Melhorar sincronização
+    db.run('PRAGMA synchronous=NORMAL;', (err) => {
+      if (err) console.error('Erro ao configurar PRAGMA synchronous:', err);
+      else console.log('✅ PRAGMA synchronous configurado');
+    });
     
     createTables();
   });

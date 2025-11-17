@@ -28,7 +28,7 @@ router.get('/available-times/:date', (req, res) => {
   
   let responded = false;
   
-  // Timeout de 5 segundos
+  // Timeout de 20 segundos (mais generoso para Render)
   const timeout = setTimeout(() => {
     if (!responded) {
       responded = true;
@@ -45,7 +45,7 @@ router.get('/available-times/:date', (req, res) => {
       ];
       res.json(defaultTimes);
     }
-  }, 5000);
+  }, 20000);
 
   db.all(
     `SELECT ts.id, ts.start_time, ts.end_time,
@@ -126,7 +126,7 @@ router.post('/create', (req, res) => {
   const appointmentId = generateAppointmentId();
   let responded = false;
   
-  // Timeout de 10 segundos
+  // Timeout de 30 segundos (mais generoso para Render)
   const timeout = setTimeout(() => {
     if (!responded) {
       responded = true;
@@ -135,7 +135,7 @@ router.post('/create', (req, res) => {
         error: 'Timeout ao processar agendamento. Tente novamente.' 
       });
     }
-  }, 10000);
+  }, 30000);
 
   db.run(
     `INSERT INTO appointments 

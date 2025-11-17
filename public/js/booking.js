@@ -78,13 +78,13 @@ function loadAvailableTimeSlots(date) {
   const timeSelect = document.getElementById('appointmentTime');
   timeSelect.innerHTML = '<option value="">Carregando horários...</option>';
   
-  // Timeout de 15 segundos
+  // Timeout de 30 segundos (mais generoso para Render)
   const timeoutId = setTimeout(() => {
     console.warn('Timeout ao carregar horários - usando horários padrão');
     loadDefaultTimeSlots(timeSelect);
-  }, 15000);
+  }, 30000);
   
-  fetch(`/api/booking/available-times/${date}`, { timeout: 10000 })
+  fetch(`/api/booking/available-times/${date}`, { timeout: 25000 })
     .then(response => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
@@ -179,12 +179,12 @@ document.getElementById('bookingForm')?.addEventListener('submit', async (e) => 
   document.getElementById('bookingForm').style.display = 'none';
   
   try {
-    // Criar controller com timeout de 15 segundos (mais agressivo)
+    // Criar controller com timeout de 40 segundos (mais generoso para Render)
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
       console.error('Timeout na requisição de agendamento');
       controller.abort();
-    }, 15000);
+    }, 40000);
     
     console.log('Enviando agendamento:', formData);
     
