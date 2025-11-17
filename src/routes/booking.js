@@ -41,9 +41,6 @@ router.get('/available-times/:date', (req, res) => {
     if (!db) {
       console.error('Banco de dados não inicializado');
       const defaultTimes = [
-        { start_time: '10:00', end_time: '11:00' },
-        { start_time: '11:00', end_time: '12:00' },
-        { start_time: '12:00', end_time: '13:00' },
         { start_time: '14:00', end_time: '15:00' },
         { start_time: '15:00', end_time: '16:00' },
         { start_time: '16:00', end_time: '17:00' },
@@ -51,6 +48,13 @@ router.get('/available-times/:date', (req, res) => {
       ];
       return res.json(defaultTimes);
     }
+
+    // Função auxiliar: verificar se é segunda-sexta (1=segunda, 5=sexta)
+    const isWeekday = (dateStr) => {
+      const dateObj = new Date(dateStr + 'T00:00:00');
+      const dayOfWeek = dateObj.getDay();
+      return dayOfWeek >= 1 && dayOfWeek <= 5; // 0=domingo, 6=sábado
+    };
     
     let responded = false;
     
@@ -61,9 +65,6 @@ router.get('/available-times/:date', (req, res) => {
         console.error('Timeout ao buscar horários para data:', date);
         // Retornar horários padrão em caso de timeout
         const defaultTimes = [
-          { start_time: '10:00', end_time: '11:00' },
-          { start_time: '11:00', end_time: '12:00' },
-          { start_time: '12:00', end_time: '13:00' },
           { start_time: '14:00', end_time: '15:00' },
           { start_time: '15:00', end_time: '16:00' },
           { start_time: '16:00', end_time: '17:00' },
@@ -96,9 +97,6 @@ router.get('/available-times/:date', (req, res) => {
         console.error('Erro ao buscar horários:', err);
         // Retornar horários padrão em caso de erro
         const defaultTimes = [
-          { start_time: '10:00', end_time: '11:00' },
-          { start_time: '11:00', end_time: '12:00' },
-          { start_time: '12:00', end_time: '13:00' },
           { start_time: '14:00', end_time: '15:00' },
           { start_time: '15:00', end_time: '16:00' },
           { start_time: '16:00', end_time: '17:00' },
@@ -110,9 +108,6 @@ router.get('/available-times/:date', (req, res) => {
       if (!rows || rows.length === 0) {
         // Se não houver registros de time_slots, retornar padrão
         const defaultTimes = [
-          { start_time: '10:00', end_time: '11:00' },
-          { start_time: '11:00', end_time: '12:00' },
-          { start_time: '12:00', end_time: '13:00' },
           { start_time: '14:00', end_time: '15:00' },
           { start_time: '15:00', end_time: '16:00' },
           { start_time: '16:00', end_time: '17:00' },
@@ -121,7 +116,31 @@ router.get('/available-times/:date', (req, res) => {
         return res.json(defaultTimes);
       }
       
-      res.json(rows);
+      // Filtrar horários: bloquear 09:00-14:00 em dias úteis (seg-sex)
+      const filteredRows = rows.filter(row => {
+        // Se for segunda a sexta
+        if (isWeekday(date)) {
+          // Bloquear horários de 09:00 a 13:59 (até 14:00)
+          const startHour = parseInt(row.start_time.split(':')[0]);
+          if (startHour < 14) {
+            return false; // Bloquear
+          }
+        }
+        return true; // Liberar
+      });
+      
+      // Se todos os horários foram filtrados, retornar padrão
+      if (filteredRows.length === 0) {
+        const defaultTimes = [
+          { start_time: '14:00', end_time: '15:00' },
+          { start_time: '15:00', end_time: '16:00' },
+          { start_time: '16:00', end_time: '17:00' },
+          { start_time: '17:00', end_time: '18:00' }
+        ];
+        return res.json(defaultTimes);
+      }
+      
+      res.json(filteredRows);
     }
   );
   } catch (error) {

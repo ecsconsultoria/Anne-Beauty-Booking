@@ -120,17 +120,20 @@ const createTables = () => {
       
       if (rows[0].count === 0) {
         console.log('Inserindo horários padrão...');
-        // Segunda a sexta: 14:00-18:00 (intervalo de 1 hora)
-        // Sábado: 10:00-18:00 (intervalo de 1 hora)
+        // Todos os horários de 09:00-18:00 (intervalo de 1 hora)
+        // Segunda a sexta: 09:00-14:00 será BLOQUEADO automaticamente
+        // Segunda a sexta: 14:00-18:00 está DISPONÍVEL
+        // Sábado: 10:00-18:00 está DISPONÍVEL
         const timeSlots = [
-          { start: '10:00', end: '11:00', day: 'sab' },
-          { start: '11:00', end: '12:00', day: 'sab' },
-          { start: '12:00', end: '13:00', day: 'sab' },
-          { start: '13:00', end: '14:00', day: 'sab' },
-          { start: '14:00', end: '15:00' },
-          { start: '15:00', end: '16:00' },
-          { start: '16:00', end: '17:00' },
-          { start: '17:00', end: '18:00' }
+          { start: '09:00', end: '10:00' }, // Bloqueado seg-sex
+          { start: '10:00', end: '11:00' }, // Bloqueado seg-sex
+          { start: '11:00', end: '12:00' }, // Bloqueado seg-sex
+          { start: '12:00', end: '13:00' }, // Bloqueado seg-sex
+          { start: '13:00', end: '14:00' }, // Bloqueado seg-sex
+          { start: '14:00', end: '15:00' }, // Disponível
+          { start: '15:00', end: '16:00' }, // Disponível
+          { start: '16:00', end: '17:00' }, // Disponível
+          { start: '17:00', end: '18:00' }  // Disponível
         ];
 
         timeSlots.forEach(slot => {
