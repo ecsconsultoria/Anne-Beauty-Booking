@@ -24,12 +24,12 @@ const initializeDatabase = () => {
     // Configurar para melhor performance no Render
     db.configure('busyTimeout', 30000); // 30 segundos
     
-    // Ativar WAL mode para melhor concorrência
-    db.run('PRAGMA journal_mode=WAL;', (err) => {
+    // Desabilitar WAL mode (pode causar problemas no Render)
+    db.run('PRAGMA journal_mode=DELETE;', (err) => {
       if (err) {
-        console.error('Erro ao ativar WAL mode:', err);
+        console.error('Erro ao configurar journal_mode:', err);
       } else {
-        console.log('✅ WAL mode ativado');
+        console.log('✅ Journal mode configurado');
       }
     });
     

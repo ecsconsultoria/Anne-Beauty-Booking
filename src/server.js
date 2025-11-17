@@ -56,8 +56,20 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Erro na aplicação:', err);
+  res.status(500).json({ 
+    error: 'Erro interno do servidor',
+    message: err.message 
+  });
+});
+
 // Start Server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🌟 Vip & Bella Booking System rodando em http://localhost:${PORT}`);
   console.log(`📱 Acesse a página de admin: http://localhost:${PORT}/admin`);
 });
+
+// Aumentar timeout para operações longas
+server.setTimeout(60000); // 60 segundos

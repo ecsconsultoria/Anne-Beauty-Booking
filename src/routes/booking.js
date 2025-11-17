@@ -5,35 +5,41 @@ const { generateAppointmentId } = require('../utils/linkGenerator');
 
 // GET - Obter datas disponíveis
 router.get('/available-dates', (req, res) => {
-  const db = getDatabase();
-  
-  db.all(
-    `SELECT date FROM available_dates 
-     WHERE is_active = 1 AND date >= date('now')
-     ORDER BY date ASC
-     LIMIT 30`,
-    (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: 'Erro ao buscar datas' });
-      }
-      res.json(rows);
+  try {
+    const db = getDatabase();
+    
+    if (!db) {
+      console.error('Banco de dados não inicializado');
+      return res.status(503).json({ error: 'Banco de dados indisponível' });
     }
-  );
+    
+    db.all(
+      `SELECT date FROM available_dates 
+       WHERE is_active = 1 AND date >= date('now')
+       ORDER BY date ASC
+       LIMIT 30`,
+      (err, rows) => {
+        if (err) {
+          console.error('Erro ao buscar datas:', err);
+          return res.status(500).json({ error: 'Erro ao buscar datas' });
+        }
+        res.json(rows || []);
+      }
+    );
+  } catch (error) {
+    console.error('Erro na rota available-dates:', error);
+    res.status(500).json({ error: 'Erro interno' });
+  }
 });
 
 // GET - Obter horários disponíveis para uma data
 router.get('/available-times/:date', (req, res) => {
-  const db = getDatabase();
-  const { date } = req.params;
-  
-  let responded = false;
-  
-  // Timeout de 20 segundos (mais generoso para Render)
-  const timeout = setTimeout(() => {
-    if (!responded) {
-      responded = true;
-      console.error('Timeout ao buscar horários para data:', date);
-      // Retornar horários padrão em caso de timeout
+  try {
+    const db = getDatabase();
+    const { date } = req.params;
+    
+    if (!db) {
+      console.error('Banco de dados não inicializado');
       const defaultTimes = [
         { start_time: '10:00', end_time: '11:00' },
         { start_time: '11:00', end_time: '12:00' },
@@ -43,9 +49,29 @@ router.get('/available-times/:date', (req, res) => {
         { start_time: '16:00', end_time: '17:00' },
         { start_time: '17:00', end_time: '18:00' }
       ];
-      res.json(defaultTimes);
+      return res.json(defaultTimes);
     }
-  }, 20000);
+    
+    let responded = false;
+    
+    // Timeout de 20 segundos (mais generoso para Render)
+    const timeout = setTimeout(() => {
+      if (!responded) {
+        responded = true;
+        console.error('Timeout ao buscar horários para data:', date);
+        // Retornar horários padrão em caso de timeout
+        const defaultTimes = [
+          { start_time: '10:00', end_time: '11:00' },
+          { start_time: '11:00', end_time: '12:00' },
+          { start_time: '12:00', end_time: '13:00' },
+          { start_time: '14:00', end_time: '15:00' },
+          { start_time: '15:00', end_time: '16:00' },
+          { start_time: '16:00', end_time: '17:00' },
+          { start_time: '17:00', end_time: '18:00' }
+        ];
+        res.json(defaultTimes);
+      }
+    }, 20000);
 
   db.all(
     `SELECT ts.id, ts.start_time, ts.end_time,
@@ -98,47 +124,67 @@ router.get('/available-times/:date', (req, res) => {
       res.json(rows);
     }
   );
+  } catch (error) {
+    console.error('Erro na rota available-times:', error);
+    const defaultTimes = [
+      { start_time: '10:00', end_time: '11:00' },
+      { start_time: '11:00', end_time: '12:00' },
+      { start_time: '12:00', end_time: '13:00' },
+      { start_time: '14:00', end_time: '15:00' },
+      { start_time: '15:00', end_time: '16:00' },
+      { start_time: '16:00', end_time: '17:00' },
+      { start_time: '17:00', end_time: '18:00' }
+    ];
+    res.json(defaultTimes);
+  }
 });
 
 // POST - Criar novo agendamento
 router.post('/create', (req, res) => {
-  const db = getDatabase();
-  const {
-    client_name,
-    client_phone,
-    client_email,
-    service,
-    appointment_date,
-    appointment_time,
-    notes
-  } = req.body;
-
-  console.log('Recebendo agendamento:', {
-    client_name, client_phone, service, appointment_date, appointment_time
-  });
-
-  // Validar dados
-  if (!client_name || !client_phone || !service || !appointment_date || !appointment_time) {
-    console.error('Dados obrigatórios faltando');
-    return res.status(400).json({ error: 'Dados obrigatórios faltando' });
-  }
-
-  const appointmentId = generateAppointmentId();
-  let responded = false;
-  
-  // Timeout de 30 segundos (mais generoso para Render)
-  const timeout = setTimeout(() => {
-    if (!responded) {
-      responded = true;
-      console.error('Timeout ao inserir agendamento');
-      return res.status(500).json({ 
-        error: 'Timeout ao processar agendamento. Tente novamente.' 
-      });
+  try {
+    const db = getDatabase();
+    
+    if (!db) {
+      console.error('Banco de dados não inicializado');
+      return res.status(503).json({ error: 'Banco de dados indisponível' });
     }
-  }, 30000);
+    
+    const {
+      client_name,
+      client_phone,
+      client_email,
+      service,
+      appointment_date,
+      appointment_time,
+      notes
+    } = req.body;
 
-  db.run(
-    `INSERT INTO appointments 
+    console.log('Recebendo agendamento:', {
+      client_name, client_phone, service, appointment_date, appointment_time
+    });
+
+    // Validar dados
+    if (!client_name || !client_phone || !service || !appointment_date || !appointment_time) {
+      console.error('Dados obrigatórios faltando');
+      return res.status(400).json({ error: 'Dados obrigatórios faltando' });
+    }
+
+    const appointmentId = generateAppointmentId();
+    let responded = false;
+    
+    // Timeout de 30 segundos (mais generoso para Render)
+    const timeout = setTimeout(() => {
+      if (!responded) {
+        responded = true;
+        console.error('Timeout ao inserir agendamento');
+        return res.status(500).json({ 
+          error: 'Timeout ao processar agendamento. Tente novamente.' 
+        });
+      }
+    }, 30000);
+
+    db.run(
+      `INSERT INTO appointments 
      (id, client_name, client_phone, client_email, service, appointment_date, appointment_time, notes, status, created_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', datetime('now'))`,
     [appointmentId, client_name, client_phone, client_email, service, appointment_date, appointment_time, notes || ''],
@@ -164,6 +210,10 @@ router.post('/create', (req, res) => {
       });
     }
   );
+  } catch (error) {
+    console.error('Erro na rota create:', error);
+    res.status(500).json({ error: 'Erro ao processar agendamento' });
+  }
 });
 
 // GET - Obter detalhes do agendamento
