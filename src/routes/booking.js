@@ -113,22 +113,50 @@ router.post('/create', (req, res) => {
     notes
   } = req.body;
 
+  console.log('Recebendo agendamento:', {
+    client_name, client_phone, service, appointment_date, appointment_time
+  });
+
   // Validar dados
   if (!client_name || !client_phone || !service || !appointment_date || !appointment_time) {
+    console.error('Dados obrigatórios faltando');
     return res.status(400).json({ error: 'Dados obrigatórios faltando' });
   }
 
   const appointmentId = generateAppointmentId();
+  let responded = false;
+  
+  // Timeout de 10 segundos
+  const timeout = setTimeout(() => {
+    if (!responded) {
+      responded = true;
+      console.error('Timeout ao inserir agendamento');
+      return res.status(500).json({ 
+        error: 'Timeout ao processar agendamento. Tente novamente.' 
+      });
+    }
+  }, 10000);
 
   db.run(
     `INSERT INTO appointments 
-     (id, client_name, client_phone, client_email, service, appointment_date, appointment_time, notes)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [appointmentId, client_name, client_phone, client_email, service, appointment_date, appointment_time, notes],
-    (err) => {
+     (id, client_name, client_phone, client_email, service, appointment_date, appointment_time, notes, status, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', datetime('now'))`,
+    [appointmentId, client_name, client_phone, client_email, service, appointment_date, appointment_time, notes || ''],
+    function(err) {
+      clearTimeout(timeout);
+      
+      if (responded) return;
+      responded = true;
+      
       if (err) {
-        return res.status(500).json({ error: 'Erro ao criar agendamento' });
+        console.error('Erro ao inserir agendamento:', err);
+        return res.status(500).json({ 
+          error: 'Erro ao criar agendamento: ' + err.message 
+        });
       }
+      
+      console.log('Agendamento criado com sucesso:', appointmentId);
+      
       res.json({
         success: true,
         appointment_id: appointmentId,

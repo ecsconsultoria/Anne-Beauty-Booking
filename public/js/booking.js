@@ -179,9 +179,14 @@ document.getElementById('bookingForm')?.addEventListener('submit', async (e) => 
   document.getElementById('bookingForm').style.display = 'none';
   
   try {
-    // Criar controller com timeout de 30 segundos
+    // Criar controller com timeout de 15 segundos (mais agressivo)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const timeoutId = setTimeout(() => {
+      console.error('Timeout na requisição de agendamento');
+      controller.abort();
+    }, 15000);
+    
+    console.log('Enviando agendamento:', formData);
     
     const response = await fetch('/api/booking/create', {
       method: 'POST',
@@ -194,26 +199,35 @@ document.getElementById('bookingForm')?.addEventListener('submit', async (e) => 
     
     clearTimeout(timeoutId);
     
+    console.log('Resposta recebida:', response.status);
+    
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Erro HTTP ${response.status}`);
     }
     
     const data = await response.json();
     
+    console.log('Resposta JSON:', data);
+    
     if (data.success && data.appointment_id) {
       // Redirecionar para página de confirmação
+      console.log('Redirecionando para confirmação');
       window.location.href = `/client/confirmation/${data.appointment_id}`;
     } else {
       throw new Error(data.error || 'Erro desconhecido');
     }
   } catch (error) {
+    clearTimeout(timeoutId);
     console.error('Erro ao processar agendamento:', error);
     
     let errorMessage = 'Erro ao processar agendamento. ';
     if (error.name === 'AbortError') {
-      errorMessage += 'A requisição demorou muito. Tente novamente.';
+      errorMessage = '⏱️ A requisição demorou muito. Verifique sua conexão e tente novamente.';
+    } else if (error.message.includes('HTTP')) {
+      errorMessage = '❌ ' + error.message + '. Tente novamente.';
     } else {
-      errorMessage += 'Tente novamente ou contate o suporte.';
+      errorMessage = '❌ ' + (error.message || 'Tente novamente ou contate o suporte.');
     }
     
     alert(errorMessage);

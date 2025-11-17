@@ -10,8 +10,17 @@ const initializeDatabase = () => {
       console.error('Erro ao conectar ao banco de dados:', err);
       return;
     }
-    console.log('✅ Banco de dados conectado');
+    console.log('✅ Banco de dados conectado:', dbPath);
+    
+    // Configurar timeouts e limites
+    db.configure('busyTimeout', 5000);
+    
     createTables();
+  });
+  
+  // Tratamento de erros
+  db.on('error', (err) => {
+    console.error('Erro no banco de dados:', err);
   });
 };
 
@@ -31,7 +40,10 @@ const createTables = () => {
         notes TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
-    `);
+    `, (err) => {
+      if (err) console.error('Erro ao criar tabela appointments:', err);
+      else console.log('✅ Tabela appointments ok');
+    });
 
     // Tabela de datas disponíveis
     db.run(`
@@ -41,7 +53,10 @@ const createTables = () => {
         max_appointments INTEGER DEFAULT 5,
         is_active INTEGER DEFAULT 1
       )
-    `);
+    `, (err) => {
+      if (err) console.error('Erro ao criar tabela available_dates:', err);
+      else console.log('✅ Tabela available_dates ok');
+    });
 
     // Tabela de horários
     db.run(`
@@ -51,7 +66,10 @@ const createTables = () => {
         end_time TEXT NOT NULL,
         is_active INTEGER DEFAULT 1
       )
-    `);
+    `, (err) => {
+      if (err) console.error('Erro ao criar tabela time_slots:', err);
+      else console.log('✅ Tabela time_slots ok');
+    });
 
     // Tabela de horários indisponíveis (controle de disponibilidade)
     db.run(`
@@ -64,11 +82,20 @@ const createTables = () => {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(date, time)
       )
-    `);
+    `, (err) => {
+      if (err) console.error('Erro ao criar tabela unavailable_slots:', err);
+      else console.log('✅ Tabela unavailable_slots ok');
+    });
 
     // Inserir horários padrão
     db.all(`SELECT COUNT(*) as count FROM time_slots`, (err, rows) => {
+      if (err) {
+        console.error('Erro ao verificar time_slots:', err);
+        return;
+      }
+      
       if (rows[0].count === 0) {
+        console.log('Inserindo horários padrão...');
         // Segunda a sexta: 14:00-18:00 (intervalo de 1 hora)
         // Sábado: 10:00-18:00 (intervalo de 1 hora)
         const timeSlots = [
@@ -85,9 +112,15 @@ const createTables = () => {
         timeSlots.forEach(slot => {
           db.run(
             `INSERT INTO time_slots (start_time, end_time) VALUES (?, ?)`,
-            [slot.start, slot.end]
+            [slot.start, slot.end],
+            (err) => {
+              if (err && !err.message.includes('UNIQUE')) {
+                console.error('Erro ao inserir horário:', err);
+              }
+            }
           );
         });
+        console.log('✅ Horários padrão inseridos');
       }
     });
   });
