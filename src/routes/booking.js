@@ -25,6 +25,27 @@ router.get('/available-dates', (req, res) => {
 router.get('/available-times/:date', (req, res) => {
   const db = getDatabase();
   const { date } = req.params;
+  
+  let responded = false;
+  
+  // Timeout de 5 segundos
+  const timeout = setTimeout(() => {
+    if (!responded) {
+      responded = true;
+      console.error('Timeout ao buscar horários para data:', date);
+      // Retornar horários padrão em caso de timeout
+      const defaultTimes = [
+        { start_time: '10:00', end_time: '11:00' },
+        { start_time: '11:00', end_time: '12:00' },
+        { start_time: '12:00', end_time: '13:00' },
+        { start_time: '14:00', end_time: '15:00' },
+        { start_time: '15:00', end_time: '16:00' },
+        { start_time: '16:00', end_time: '17:00' },
+        { start_time: '17:00', end_time: '18:00' }
+      ];
+      res.json(defaultTimes);
+    }
+  }, 5000);
 
   db.all(
     `SELECT ts.id, ts.start_time, ts.end_time,
@@ -40,9 +61,40 @@ router.get('/available-times/:date', (req, res) => {
      ORDER BY ts.start_time ASC`,
     [date, date],
     (err, rows) => {
+      clearTimeout(timeout);
+      
+      if (responded) return;
+      responded = true;
+      
       if (err) {
-        return res.status(500).json({ error: 'Erro ao buscar horários' });
+        console.error('Erro ao buscar horários:', err);
+        // Retornar horários padrão em caso de erro
+        const defaultTimes = [
+          { start_time: '10:00', end_time: '11:00' },
+          { start_time: '11:00', end_time: '12:00' },
+          { start_time: '12:00', end_time: '13:00' },
+          { start_time: '14:00', end_time: '15:00' },
+          { start_time: '15:00', end_time: '16:00' },
+          { start_time: '16:00', end_time: '17:00' },
+          { start_time: '17:00', end_time: '18:00' }
+        ];
+        return res.json(defaultTimes);
       }
+      
+      if (!rows || rows.length === 0) {
+        // Se não houver registros de time_slots, retornar padrão
+        const defaultTimes = [
+          { start_time: '10:00', end_time: '11:00' },
+          { start_time: '11:00', end_time: '12:00' },
+          { start_time: '12:00', end_time: '13:00' },
+          { start_time: '14:00', end_time: '15:00' },
+          { start_time: '15:00', end_time: '16:00' },
+          { start_time: '16:00', end_time: '17:00' },
+          { start_time: '17:00', end_time: '18:00' }
+        ];
+        return res.json(defaultTimes);
+      }
+      
       res.json(rows);
     }
   );
