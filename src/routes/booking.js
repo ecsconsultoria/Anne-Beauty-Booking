@@ -191,44 +191,58 @@ router.post('/create', (req, res) => {
     const appointmentId = generateAppointmentId();
     let responded = false;
     
-    // Timeout de 30 segundos (mais generoso para Render)
-    const timeout = setTimeout(() => {
-      if (!responded) {
-        responded = true;
-        console.error('Timeout ao inserir agendamento');
-        return res.status(500).json({ 
-          error: 'Timeout ao processar agendamento. Tente novamente.' 
-        });
-      }
-    }, 30000);
+    // Buscar preço do serviço
+    db.get(
+      `SELECT price FROM services WHERE name = ?`,
+      [service],
+      function(err, serviceData) {
+        if (err) {
+          console.error('Erro ao buscar preço do serviço:', err);
+          serviceData = { price: 0 };
+        }
+        
+        const servicePrice = serviceData ? serviceData.price : 0;
+        
+        // Timeout de 30 segundos (mais generoso para Render)
+        const timeout = setTimeout(() => {
+          if (!responded) {
+            responded = true;
+            console.error('Timeout ao inserir agendamento');
+            return res.status(500).json({ 
+              error: 'Timeout ao processar agendamento. Tente novamente.' 
+            });
+          }
+        }, 30000);
 
-    db.run(
-      `INSERT INTO appointments 
-     (id, client_name, client_phone, client_email, service, appointment_date, appointment_time, notes, status, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', datetime('now'))`,
-    [appointmentId, client_name, client_phone, client_email, service, appointment_date, appointment_time, notes || ''],
-    function(err) {
-      clearTimeout(timeout);
-      
-      if (responded) return;
-      responded = true;
-      
-      if (err) {
-        console.error('Erro ao inserir agendamento:', err);
-        return res.status(500).json({ 
-          error: 'Erro ao criar agendamento: ' + err.message 
-        });
+        db.run(
+          `INSERT INTO appointments 
+           (id, client_name, client_phone, client_email, service, service_price, appointment_date, appointment_time, notes, status, created_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', datetime('now'))`,
+          [appointmentId, client_name, client_phone, client_email, service, servicePrice, appointment_date, appointment_time, notes || ''],
+          function(err) {
+            clearTimeout(timeout);
+            
+            if (responded) return;
+            responded = true;
+            
+            if (err) {
+              console.error('Erro ao inserir agendamento:', err);
+              return res.status(500).json({ 
+                error: 'Erro ao criar agendamento: ' + err.message 
+              });
+            }
+            
+            console.log('Agendamento criado com sucesso:', appointmentId);
+            
+            res.json({
+              success: true,
+              appointment_id: appointmentId,
+              message: 'Agendamento confirmado! Você receberá uma confirmação via WhatsApp.'
+            });
+          }
+        );
       }
-      
-      console.log('Agendamento criado com sucesso:', appointmentId);
-      
-      res.json({
-        success: true,
-        appointment_id: appointmentId,
-        message: 'Agendamento confirmado! Você receberá uma confirmação via WhatsApp.'
-      });
-    }
-  );
+    );
   } catch (error) {
     console.error('Erro na rota create:', error);
     res.status(500).json({ error: 'Erro ao processar agendamento' });

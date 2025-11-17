@@ -64,17 +64,21 @@ router.get('/dashboard', checkAuth, (req, res) => {
         console.error('Erro ao carregar appointments:', err);
         return res.render('admin-dashboard', { 
           appointments: [], 
-          stats: { total: 0, confirmed: 0, cancelled: 0, completed: 0 },
+          stats: { total: 0, confirmed: 0, cancelled: 0, completed: 0, totalEntrada: 0 },
           error: 'Erro ao carregar agendamentos'
         });
       }
       
       // Calcular estatísticas
+      const completedAppointments = appointments.filter(a => a.status === 'completed');
+      const totalEntrada = completedAppointments.reduce((sum, a) => sum + (a.service_price || 0), 0);
+      
       const stats = {
         total: appointments.length,
         confirmed: appointments.filter(a => a.status === 'confirmed').length,
         cancelled: appointments.filter(a => a.status === 'cancelled').length,
-        completed: appointments.filter(a => a.status === 'completed').length
+        completed: completedAppointments.length,
+        totalEntrada: totalEntrada.toFixed(2)
       };
 
       res.render('admin-dashboard', { appointments, stats, error: null });

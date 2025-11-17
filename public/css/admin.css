@@ -123,9 +123,19 @@
   color: var(--danger-color);
 }
 
-.stat-label {
-  color: var(--text-light);
-  font-size: 0.95em;
+.stat-card.total-entrada {
+  border-left-color: #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.1));
+}
+
+.stat-card.total-entrada .stat-number {
+  color: #10b981;
+  font-size: 2em;
+}
+
+.stat-card.total-entrada .stat-label {
+  font-weight: 600;
+  color: #10b981;
 }
 
 /* Appointments Section */
@@ -178,6 +188,12 @@
 .appointment-row.cancelled td {
   opacity: 0.6;
   text-decoration: line-through;
+}
+
+.service-price {
+  color: #10b981;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* Status Badge */

@@ -33,6 +33,10 @@
 
       <!-- Estatísticas -->
       <div class="stats-grid">
+        <div class="stat-card total-entrada">
+          <div class="stat-number">R$ <%= stats.totalEntrada %></div>
+          <div class="stat-label">Total Entrada</div>
+        </div>
         <div class="stat-card">
           <div class="stat-number"><%= stats.total %></div>
           <div class="stat-label">Total de Agendamentos</div>
@@ -64,6 +68,7 @@
                   <th>Horário</th>
                   <th>Cliente</th>
                   <th>Serviço</th>
+                  <th>Valor</th>
                   <th>Telefone</th>
                   <th>Status</th>
                   <th>Ações</th>
@@ -76,6 +81,7 @@
                     <td><%= apt.appointment_time %></td>
                     <td><%= apt.client_name %></td>
                     <td><%= formatServiceName(apt.service) %></td>
+                    <td class="service-price"><strong>R$ <%= (apt.service_price || 0).toFixed(2) %></strong></td>
                     <td>
                       <a href="https://wa.me/55<%= apt.client_phone.replace(/\D/g, '') %>" target="_blank">
                         <%= apt.client_phone %>

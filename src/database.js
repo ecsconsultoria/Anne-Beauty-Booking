@@ -58,6 +58,7 @@ const createTables = () => {
         client_phone TEXT NOT NULL,
         client_email TEXT,
         service TEXT NOT NULL,
+        service_price REAL DEFAULT 0,
         appointment_date TEXT NOT NULL,
         appointment_time TEXT NOT NULL,
         status TEXT DEFAULT 'confirmed',
@@ -109,6 +110,50 @@ const createTables = () => {
     `, (err) => {
       if (err) console.error('Erro ao criar tabela unavailable_slots:', err);
       else console.log('✅ Tabela unavailable_slots ok');
+    });
+
+    // Tabela de serviços e preços
+    db.run(`
+      CREATE TABLE IF NOT EXISTS services (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE,
+        price REAL NOT NULL,
+        display_order INTEGER NOT NULL
+      )
+    `, (err) => {
+      if (err) console.error('Erro ao criar tabela services:', err);
+      else console.log('✅ Tabela services ok');
+    });
+
+    // Inserir serviços com preços (na ordem especificada)
+    db.all(`SELECT COUNT(*) as count FROM services`, (err, rows) => {
+      if (err) {
+        console.error('Erro ao verificar services:', err);
+        return;
+      }
+
+      if (rows[0].count === 0) {
+        console.log('Inserindo serviços e preços...');
+        const services = [
+          { name: 'cilios', displayName: 'Cílios', price: 120.00, order: 1 },
+          { name: 'pedicure', displayName: 'Pedicure', price: 35.00, order: 2 },
+          { name: 'manicure', displayName: 'Manicure', price: 30.00, order: 3 },
+          { name: 'combo_mani_pedi', displayName: 'Combo Manicure + Pedicure', price: 60.00, order: 4 }
+        ];
+
+        services.forEach(service => {
+          db.run(
+            `INSERT INTO services (name, price, display_order) VALUES (?, ?, ?)`,
+            [service.name, service.price, service.order],
+            (err) => {
+              if (err && !err.message.includes('UNIQUE')) {
+                console.error('Erro ao inserir serviço:', err);
+              }
+            }
+          );
+        });
+        console.log('✅ Serviços e preços inseridos');
+      }
     });
 
     // Inserir horários padrão
