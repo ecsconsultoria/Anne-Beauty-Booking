@@ -6,7 +6,42 @@ const COMPANY_PHONE = '5511961672313'; // Sem formatação
 document.addEventListener('DOMContentLoaded', () => {
   setupDatePicker();
   setupDateChangeListener();
+  setupPhoneMask();
 });
+
+// Máscara para telefone (11) 99999-9999
+function setupPhoneMask() {
+  const phoneInput = document.getElementById('clientPhone');
+  
+  phoneInput.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\D/g, ''); // Remove não-dígitos
+    
+    if (value.length > 11) {
+      value = value.slice(0, 11);
+    }
+    
+    // Aplicar máscara
+    if (value.length === 0) {
+      e.target.value = '';
+    } else if (value.length <= 2) {
+      e.target.value = `(${value}`;
+    } else if (value.length <= 7) {
+      e.target.value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+    } else {
+      e.target.value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
+    }
+  });
+  
+  // Validar ao sair do campo
+  phoneInput.addEventListener('blur', (e) => {
+    const value = e.target.value.replace(/\D/g, '');
+    if (value.length !== 11) {
+      e.target.classList.add('error');
+    } else {
+      e.target.classList.remove('error');
+    }
+  });
+}
 
 function setupDatePicker() {
   const dateInput = document.getElementById('appointmentDate');
