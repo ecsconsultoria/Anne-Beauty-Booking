@@ -39,9 +39,13 @@
     fetch(`/api/booking/${appointmentId}`)
       .then(res => res.json())
       .then(data => {
+        // Formatar data sem problemas de fuso horário
+        const [year, month, day] = data.appointment_date.split('-');
+        const formattedDate = `${day}/${month}/${year}`;
+        
         const detailsHtml = `
           <div class="detail">
-            <strong>📅 Data:</strong> ${new Date(data.appointment_date).toLocaleDateString('pt-BR')}
+            <strong>📅 Data:</strong> ${formattedDate}
           </div>
           <div class="detail">
             <strong>🕐 Hora:</strong> ${data.appointment_time}

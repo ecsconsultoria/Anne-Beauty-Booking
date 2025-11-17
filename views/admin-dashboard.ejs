@@ -76,8 +76,12 @@
               </thead>
               <tbody>
                 <% appointments.forEach(apt => { %>
+                  <% 
+                    const [year, month, day] = apt.appointment_date.split('-');
+                    const formattedDate = `${day}/${month}/${year}`;
+                  %>
                   <tr class="appointment-row <%= apt.status %>">
-                    <td><%= new Date(apt.appointment_date).toLocaleDateString('pt-BR') %></td>
+                    <td><%= formattedDate %></td>
                     <td><%= apt.appointment_time %></td>
                     <td><%= apt.client_name %></td>
                     <td><%= formatServiceName(apt.service) %></td>
