@@ -23,22 +23,50 @@ router.post('/login', (req, res) => {
   if (password !== 'anne2025') {
     return res.render('admin-login', { error: 'Senha incorreta' });
   }
-  res.cookie('admin_auth', password);
+  res.cookie('admin_auth', password, { 
+    httpOnly: true, 
+    secure: true, 
+    sameSite: 'Lax',
+    maxAge: 24 * 60 * 60 * 1000 
+  });
   res.redirect('/admin/dashboard');
 });
 
 // GET - Dashboard (requer autenticação)
 router.get('/dashboard', checkAuth, (req, res) => {
   const db = getDatabase();
+  let responded = false;
+  
+  // Timeout de 10 segundos
+  const timeout = setTimeout(() => {
+    if (!responded) {
+      responded = true;
+      console.error('Timeout ao carregar dashboard');
+      return res.render('admin-dashboard', { 
+        appointments: [], 
+        stats: { total: 0, confirmed: 0, cancelled: 0, completed: 0 },
+        error: 'Timeout ao carregar dados'
+      });
+    }
+  }, 10000);
   
   db.all(
     `SELECT * FROM appointments 
      WHERE appointment_date >= date('now')
      ORDER BY appointment_date ASC, appointment_time ASC`,
     (err, appointments) => {
+      clearTimeout(timeout);
+      
+      if (responded) return;
+      responded = true;
+      
       if (err) {
-        console.error(err);
-        return res.render('admin-dashboard', { appointments: [], stats: {} });
+        console.error('Erro ao carregar appointments:', err);
+        return res.render('admin-dashboard', { 
+          appointments: [], 
+          stats: { total: 0, confirmed: 0, cancelled: 0, completed: 0 },
+          error: 'Erro ao carregar agendamentos'
+        });
       }
       
       // Calcular estatísticas
@@ -49,7 +77,7 @@ router.get('/dashboard', checkAuth, (req, res) => {
         completed: appointments.filter(a => a.status === 'completed').length
       };
 
-      res.render('admin-dashboard', { appointments, stats });
+      res.render('admin-dashboard', { appointments, stats, error: null });
     }
   );
 });
@@ -112,7 +140,7 @@ router.get('/generate-link', checkAuth, (req, res) => {
   
   res.json({
     link: bookingLink,
-    whatsapp: `https://wa.me/5511961672313?text=Olá! Agende seu serviço de manicure, pedicura e cílios: ${bookingLink}`
+    whatsapp: `https://wa.me/5511961672313?text=Olá! Agende seu serviço de manicure, pedicure e cílios: ${bookingLink}`
   });
 });
 

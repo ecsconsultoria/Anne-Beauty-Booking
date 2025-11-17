@@ -22,10 +22,10 @@ app.set('views', path.join(__dirname, '../views'));
 app.locals.formatServiceName = (service) => {
   const names = {
     'manicure': 'Manicure',
-    'pedicure': 'Pedicura',
+    'pedicure': 'Pedicure',
     'cilios': 'Cílios',
-    'combo_mani_pedi': 'Manicure + Pedicura',
-    'combo_completo': 'Manicure + Pedicura + Cílios'
+    'combo_mani_pedi': 'Manicure + Pedicure',
+    'combo_completo': 'Manicure + Pedicure + Cílios'
   };
   return names[service] || service;
 };
