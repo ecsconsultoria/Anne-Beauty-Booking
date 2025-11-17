@@ -1,10 +1,19 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 
 const dbPath = path.join(__dirname, '../data/appointments.db');
 let db;
 
 const initializeDatabase = () => {
+  // Garantir que o diretório data/ existe
+  const dataDir = path.dirname(dbPath);
+  if (!fs.existsSync(dataDir)) {
+    console.log('📁 Criando diretório:', dataDir);
+    fs.mkdirSync(dataDir, { recursive: true });
+    console.log('✅ Diretório criado com sucesso');
+  }
+
   db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
       console.error('Erro ao conectar ao banco de dados:', err);

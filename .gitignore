@@ -1,5 +1,8 @@
 node_modules/
-data/
 *.log
 .env
 .DS_Store
+# Ignorar apenas arquivos do banco de dados no diretório data, mas permitir o diretório existir
+data/*.db
+data/*.db-shm
+data/*.db-wal
