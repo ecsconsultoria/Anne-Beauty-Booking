@@ -179,27 +179,44 @@ document.getElementById('bookingForm')?.addEventListener('submit', async (e) => 
   document.getElementById('bookingForm').style.display = 'none';
   
   try {
+    // Criar controller com timeout de 30 segundos
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    
     const response = await fetch('/api/booking/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(formData)
+      body: JSON.stringify(formData),
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
     
     const data = await response.json();
     
-    if (data.success) {
+    if (data.success && data.appointment_id) {
       // Redirecionar para página de confirmação
       window.location.href = `/client/confirmation/${data.appointment_id}`;
     } else {
-      alert('Erro ao criar agendamento: ' + data.error);
-      document.getElementById('loadingSpinner').style.display = 'none';
-      document.getElementById('bookingForm').style.display = 'block';
+      throw new Error(data.error || 'Erro desconhecido');
     }
   } catch (error) {
-    console.error('Erro:', error);
-    alert('Erro ao processar agendamento. Tente novamente.');
+    console.error('Erro ao processar agendamento:', error);
+    
+    let errorMessage = 'Erro ao processar agendamento. ';
+    if (error.name === 'AbortError') {
+      errorMessage += 'A requisição demorou muito. Tente novamente.';
+    } else {
+      errorMessage += 'Tente novamente ou contate o suporte.';
+    }
+    
+    alert(errorMessage);
     document.getElementById('loadingSpinner').style.display = 'none';
     document.getElementById('bookingForm').style.display = 'block';
   }

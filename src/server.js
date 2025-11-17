@@ -58,6 +58,6 @@ app.get('/', (req, res) => {
 
 // Start Server
 app.listen(PORT, () => {
-  console.log(`🌟 Anne Beauty Booking System rodando em http://localhost:${PORT}`);
+  console.log(`🌟 Vip & Bella Booking System rodando em http://localhost:${PORT}`);
   console.log(`📱 Acesse a página de admin: http://localhost:${PORT}/admin`);
 });
